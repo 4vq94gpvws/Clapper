@@ -82,6 +82,14 @@ def start(
     return job
 
 
+def _cleanup(on_finish: Callable[[], None] | None) -> None:
+    if on_finish:
+        try:
+            on_finish()
+        except OSError:
+            pass  # a leftover temp file must not turn a finished render into an error
+
+
 def _run(project, job, argv, cwd, output, progress, env, on_finish, state) -> None:
     log: list[str] = []
     started = time.time()
@@ -100,9 +108,8 @@ def _run(project, job, argv, cwd, output, progress, env, on_finish, state) -> No
         )
     except OSError as e:
         state.update(status="error", error=f"could not start {argv[0]}: {e}")
+        _cleanup(on_finish)
         _write(project, job, state)
-        if on_finish:
-            on_finish()
         return
     with _LOCK:
         _LIVE[job] = proc
@@ -148,9 +155,10 @@ def _run(project, job, argv, cwd, output, progress, env, on_finish, state) -> No
     state["seconds"] = int(time.time() - started)
     if state["status"] == "error":
         state["log_tail"] = tail
+    # Clean up first, then announce the result: whoever sees "done" can rely on the temp
+    # files being gone.
+    _cleanup(on_finish)
     _write(project, job, state)
-    if on_finish:
-        on_finish()
 
 
 def status(project: str, job: str) -> dict:

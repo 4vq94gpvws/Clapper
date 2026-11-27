@@ -140,3 +140,28 @@ def test_blender_runs_a_script_with_the_output_after_the_dashes(tmp_path, monkey
     started = blender.start("p", "blender/scene.py", "out/a.mp4", frames=10)
     assert wait("p", started["job"])["status"] == "done"
     assert (work / "p" / "out" / "a.mp4").read_text() == "x"
+
+
+def test_cleanup_runs_before_a_job_is_reported_finished():
+    """A finished job must not leave temp files behind: when the status says done or error,
+    the cleanup has already run. (CI caught the reverse order as a flaky test.)"""
+    seen = {}
+    root = project_dir("p")
+    (root / "out").mkdir(exist_ok=True)
+
+    def cleanup():
+        seen["status_during_cleanup"] = jobs.status("p", job_id)["status"]
+
+    job_id = "abcdef012345"
+    jobs.start(
+        "p",
+        "test",
+        [sys.executable, "-c", "open('out/x.mp4','wb').write(b'1')"],
+        cwd=root,
+        output=root / "out" / "x.mp4",
+        output_rel="out/x.mp4",
+        on_finish=cleanup,
+        job_id=job_id,
+    )
+    assert wait("p", job_id)["status"] == "done"
+    assert seen["status_during_cleanup"] == "running"
