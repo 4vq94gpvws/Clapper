@@ -25,11 +25,21 @@ ARG BLENDER_VERSION=5.3.0
 ARG BLENDER_SHA256=dacb8264197a3f7fda6001285a5a506fc97ee943881261c2c3bd63c882f22e05
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl xz-utils \
     && rm -rf /var/lib/apt/lists/*
+# download.blender.org answers some CI networks with HTTP 403, so a few official mirrors are
+# tried in turn. The SHA-256 check is what makes that safe: a mirror cannot serve other bytes.
 RUN set -eux; mkdir -p /opt/blender; \
     if [ "$TARGETARCH" = "amd64" ]; then \
-      curl -fsSL -o /tmp/blender.tar.xz \
-        "https://download.blender.org/release/Blender${BLENDER_VERSION%.*}/blender-${BLENDER_VERSION}-linux-x64.tar.xz"; \
-      echo "${BLENDER_SHA256}  /tmp/blender.tar.xz" | sha256sum -c -; \
+      path="release/Blender${BLENDER_VERSION%.*}/blender-${BLENDER_VERSION}-linux-x64.tar.xz"; \
+      ok=0; \
+      for base in https://download.blender.org https://mirror.clarkson.edu/blender \
+                  https://mirror.freedif.org/blender https://ftp.nluug.nl/pub/graphics/blender; do \
+        if curl -fsSL --retry 2 --connect-timeout 20 -o /tmp/blender.tar.xz "$base/$path" \
+           && echo "${BLENDER_SHA256}  /tmp/blender.tar.xz" | sha256sum -c -; then \
+          ok=1; break; \
+        fi; \
+        echo "Blender download from $base failed, trying the next mirror" >&2; \
+      done; \
+      [ "$ok" = 1 ] || { echo "Could not download a verified Blender from any mirror" >&2; exit 1; }; \
       tar -xJf /tmp/blender.tar.xz -C /opt/blender --strip-components=1; \
     else \
       echo "No official Blender build for ${TARGETARCH}; skipping."; \
