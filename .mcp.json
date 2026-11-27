@@ -7,7 +7,7 @@
         "--cap-drop=ALL", "--security-opt=no-new-privileges",
         "-v", "clapper-work:/work",
         "-e", "GROQ_API_KEY", "-e", "PEXELS_API_KEY", "-e", "UNSPLASH_ACCESS_KEY",
-        "ghcr.io/OWNER/clapper:latest"
+        "ghcr.io/4vq94gpvws/clapper:latest"
       ]
     }
   }
