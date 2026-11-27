@@ -1,0 +1,25 @@
+# Run the server as a long-lived HTTP service:
+#   cp .env.example .env     # set CLAPPER_TOKEN (and any API keys)
+#   docker compose up -d
+# MCP endpoint: http://127.0.0.1:8770/mcp   (Authorization: Bearer <CLAPPER_TOKEN>)
+#
+# GPU (NVIDIA Container Toolkit installed):
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+services:
+  clapper:
+    image: ghcr.io/OWNER/clapper:latest   # replace OWNER, or use `build: .` below
+    # build: .
+    restart: unless-stopped
+    environment:
+      CLAPPER_TRANSPORT: http
+      CLAPPER_TOKEN: ${CLAPPER_TOKEN:?set CLAPPER_TOKEN in .env (openssl rand -hex 32)}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      PEXELS_API_KEY: ${PEXELS_API_KEY:-}
+      UNSPLASH_ACCESS_KEY: ${UNSPLASH_ACCESS_KEY:-}
+    ports:
+      - "127.0.0.1:8770:8770"   # loopback only; put a TLS proxy in front to expose it
+    volumes:
+      - ./work:/work
+    user: "${CLAPPER_UID:-1000}:${CLAPPER_GID:-1000}"
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
