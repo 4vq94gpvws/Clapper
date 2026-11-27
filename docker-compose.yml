@@ -7,7 +7,7 @@
 #   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
 services:
   clapper:
-    image: ghcr.io/OWNER/clapper:latest   # replace OWNER, or use `build: .` below
+    image: ghcr.io/4vq94gpvws/clapper:latest   # or use `build: .` below to build it yourself
     # build: .
     restart: unless-stopped
     environment:

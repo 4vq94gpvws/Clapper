@@ -1,10 +1,10 @@
 # Normally you do not copy this by hand:
-#   docker run --rm ghcr.io/OWNER/clapper:latest --print-config codex >> ~/.codex/config.toml
+#   docker run --rm ghcr.io/4vq94gpvws/clapper:latest --print-config codex >> ~/.codex/config.toml
 # This is what that prints. `codex mcp get clapper` (codex-cli 0.172.0) reads these keys.
 
 [mcp_servers.clapper]
 command = "docker"
-args = ["run", "-i", "--rm", "--cap-drop=ALL", "--security-opt=no-new-privileges", "-v", "clapper-work:/work", "-e", "GROQ_API_KEY", "-e", "PEXELS_API_KEY", "-e", "UNSPLASH_ACCESS_KEY", "ghcr.io/OWNER/clapper:latest"]
+args = ["run", "-i", "--rm", "--cap-drop=ALL", "--security-opt=no-new-privileges", "-v", "clapper-work:/work", "-e", "GROQ_API_KEY", "-e", "PEXELS_API_KEY", "-e", "UNSPLASH_ACCESS_KEY", "ghcr.io/4vq94gpvws/clapper:latest"]
 env_vars = ["GROQ_API_KEY", "PEXELS_API_KEY", "UNSPLASH_ACCESS_KEY"]
 startup_timeout_sec = 120
 tool_timeout_sec = 600

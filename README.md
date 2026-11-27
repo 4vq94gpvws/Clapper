@@ -24,8 +24,8 @@ not call any LLM.
 ### 1. Codex
 
 ```bash
-docker pull ghcr.io/OWNER/clapper:latest        # once; the image is large
-docker run --rm ghcr.io/OWNER/clapper:latest --print-config codex >> ~/.codex/config.toml
+docker pull ghcr.io/4vq94gpvws/clapper:latest        # once; the image is large
+docker run --rm ghcr.io/4vq94gpvws/clapper:latest --print-config codex >> ~/.codex/config.toml
 export GROQ_API_KEY=...                               # whichever keys you want, see Keys
 ```
 
@@ -37,7 +37,7 @@ variables listed there, so without that line your API keys would not reach the c
 Give Codex the working instructions by putting them in the folder you work in:
 
 ```bash
-docker run --rm ghcr.io/OWNER/clapper:latest --print-instructions >> AGENTS.md
+docker run --rm ghcr.io/4vq94gpvws/clapper:latest --print-instructions >> AGENTS.md
 ```
 
 (or `~/.codex/AGENTS.md` for all projects). Then ask: *"Make a 20 second explainer video about

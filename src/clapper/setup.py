@@ -11,7 +11,7 @@ import json
 import os
 from importlib import resources
 
-DEFAULT_IMAGE = "ghcr.io/OWNER/clapper:latest"
+DEFAULT_IMAGE = "ghcr.io/4vq94gpvws/clapper:latest"
 KEYS = ("GROQ_API_KEY", "PEXELS_API_KEY", "UNSPLASH_ACCESS_KEY")
 DOCKER_ARGS = [
     "run",
