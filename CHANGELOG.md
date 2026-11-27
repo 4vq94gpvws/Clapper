@@ -6,6 +6,8 @@ All notable changes are listed here. The format follows
 
 ## [Unreleased]
 
+- Python dependencies in the image are installed from hash-locked files.
+
 ## [0.1.0]
 
 First preview: MCP server with Remotion and Blender renders as background jobs, voice-over and

@@ -55,10 +55,14 @@ RUN printf '#!/bin/sh\nexec /usr/bin/chromium --no-sandbox --disable-dev-shm-usa
       > /usr/local/bin/chromium-container \
     && chmod 0755 /usr/local/bin/chromium-container
 
+# Python dependencies come from hash-locked files (requirements.txt, requirements-build.txt):
+# a changed or substituted package fails the build instead of being installed.
 WORKDIR /app
-COPY pyproject.toml README.md ./
+COPY requirements.txt requirements-build.txt ./
+RUN pip install --no-cache-dir --require-hashes -r requirements.txt -r requirements-build.txt
+COPY pyproject.toml README.md LICENSE ./
 COPY src ./src
-RUN pip install --no-cache-dir .
+RUN pip install --no-cache-dir --no-deps --no-build-isolation .
 
 RUN useradd --create-home --uid 1000 clapper && mkdir /work && chown clapper /work
 USER clapper
