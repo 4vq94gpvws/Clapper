@@ -14,6 +14,17 @@ pytest -q
 Tests need no API keys and no Docker: network calls are replaced by fakes, and renders use stub
 CLIs. If you have ffmpeg installed, the media tests run too.
 
+## Dependencies
+
+The image installs Python packages from hash-locked files (`requirements.txt` for the server,
+`requirements-build.txt` for the build backend). After changing `pyproject.toml`, regenerate:
+
+```bash
+uv pip compile pyproject.toml --universal --python-version 3.12 --generate-hashes --no-header -o requirements.txt
+```
+
+Dependabot proposes updates to both files and to `render/package-lock.json`.
+
 ## Pull requests
 
 - One change per PR, with a test that fails without it. Fix first, then prove it.
